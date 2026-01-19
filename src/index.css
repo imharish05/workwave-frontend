@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@tailwind utilities;
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css");
+
+html, body, #root {
+  margin: 0;
+  padding: 0 !important;
+  height: 100%;
+  max-width: 100% !important;
+  overflow-x: hidden; /* optional if horizontal scroll exists */
+}

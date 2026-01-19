@@ -1,0 +1,21 @@
+import axios from "axios";
+import {store} from "../store/store.js"
+import { logOut } from "../Slices/authSlice";
+
+const api = axios.create({
+  baseURL: "https://workwave-backend-qqr3.onrender.com/api",
+  // baseURL: "http://localhost:5000/api",
+});
+
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+export default api;
