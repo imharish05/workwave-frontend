@@ -31,7 +31,6 @@ const EmployerProfile = () => {
     navigate("/login", { replace: true });
   };
 
-  console.log(employer.jobPosted)
 
   return (
     <>

@@ -3,7 +3,7 @@ import {store} from "../store/store.js"
 import { logOut } from "../Slices/authSlice";
 
 const api = axios.create({
-  baseURL: "https://workwave-backend-qqr3.onrender.com/api",
+  baseURL: "https://workwave-backend-6gta.onrender.com/api",
   // baseURL: "http://localhost:5000/api",
 });
 

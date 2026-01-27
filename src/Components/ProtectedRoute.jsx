@@ -56,7 +56,7 @@ export const ProfileBootstrap = () => {
           jobPreference,
           jobExperience,
           language,
-          appliedJobs
+          appliedJobs,
         ] = await Promise.all([
           api.get("/employee/profile"),
           api.get("/employee/education"),
@@ -69,9 +69,10 @@ export const ProfileBootstrap = () => {
           api.get("/employee/applied-jobs"),
         ]);
 
+
         dispatch(setProfile(profile.data));
         dispatch(setEducation(edu.data.education));
-        dispatch(setResume(resume.data.resumeUrl));
+        dispatch(setResume(resume.data));
         dispatch(setSkill(skills.data.skills));
         dispatch(setCertifications(certificates.data.certifications));
         dispatch(setJobPreferences(jobPreference.data.jobPreferences));
@@ -106,13 +107,21 @@ export const ProfileBootstrap = () => {
       employee.userName && employee.phone && employee.location?.country;
 
     const hasEducation = employee.education?.length > 0;
-    const hasResume = Boolean(employee.resume);
+
+    console.log(hasEducation);
+    
+
+    const hasResume = Boolean(employee.resume?.url);
 
     if (!hasBasic && location.pathname !== "/employee/profile") {
       return <Navigate to="/employee/profile" replace />;
     }
 
-    if (hasBasic && !hasEducation && location.pathname !== "/employee/education") {
+    if (
+      hasBasic &&
+      !hasEducation &&
+      location.pathname !== "/employee/education"
+    ) {
       return <Navigate to="/employee/education" replace />;
     }
 
@@ -125,11 +134,20 @@ export const ProfileBootstrap = () => {
       return <Navigate to="/employee/resume" replace />;
     }
 
+    const ONBOARDING_ONLY = [
+      "/employee/profile",
+      "/employee/education",
+      "/employee/resume",
+    ];
+
+    const isOnboardingRoute = ONBOARDING_ONLY.includes(location.pathname);
+
     if (
       hasBasic &&
       hasEducation &&
       hasResume &&
-      location.pathname === "/employee/resume"
+      isOnboardingRoute &&
+      location.pathname !== "/employee/resume"
     ) {
       return <Navigate to="/employee/all-jobs" replace />;
     }
@@ -151,6 +169,5 @@ export const ProfileBootstrap = () => {
 
   return <Outlet />;
 };
-
 
 export default ProtectedRoute;

@@ -3,6 +3,7 @@ import authSlice from "../Slices/authSlice.js"
 import employeeSlice from "../Slices/employeeSlice.js"
 import employerSlice from "../Slices/employerSlice.js"
 import jobSlice from "../Slices/jobSlice.js"
+import rootReducer from "../Slices/rootReducer.js"
 
 
 export const store = configureStore({
@@ -11,5 +12,6 @@ export const store = configureStore({
         employee : employeeSlice,
         employer : employerSlice,
         job : jobSlice,
+        reducer: rootReducer,
     }
 })

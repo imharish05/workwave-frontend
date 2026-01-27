@@ -22,7 +22,6 @@ const AllJobs = () => {
       const keywordLower = keyword.toLowerCase();
       const locationLower = location.toLowerCase();
 
-      // title OR skill
       const keywordMatch =
         keyword.trim() === "" ||
         job.title?.toLowerCase().includes(keywordLower) ||
@@ -47,7 +46,7 @@ const AllJobs = () => {
         <h1 className="text-2xl font-bold mb-6">Find Your Next Job</h1>
 
         {/* Search Inputs */}
-        <div className="flex flex-col sm:flex-row mb-6">
+        <div className="flex flex-col sm:flex-row md:mb-5 mb-3 gap-2">
           <input
             type="text"
             placeholder="Job title or skill (React, Backend, Designer)"

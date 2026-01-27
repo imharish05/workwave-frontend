@@ -27,7 +27,6 @@ let initialState = {
 const employeeSlice = createSlice({
   name: "employee",
   initialState: initialState,
-
   reducers: {
     setProfile: (state, action) => {
       const { userName, phone, location } = action.payload;
@@ -75,9 +74,7 @@ const employeeSlice = createSlice({
     setAppliedJobs : (state,action) => {
       state.appliedJobs = action.payload
     },
-    resetEmployee: () => {
-      initialState;
-    },
+    resetEmployee: () => initialState,
   },
 });
 

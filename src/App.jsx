@@ -32,6 +32,7 @@ import JobDetails from "./Components/JobDetails.jsx";
 import AppliedJobs from "./Components/AppliedJobs.jsx";
 import ViewApplicants from "./Components/ViewApplicants.jsx";
 import ApplicantDetails from "./Components/ApplicantDetails.jsx";
+import NotFound from "./Pages/NotFound.jsx";
 
 const LandingPage = lazy(() => import("./Pages/LandingPage.jsx"));
 const SignInForm = lazy(() => import("./Components/LoginForm.jsx"));
@@ -175,6 +176,11 @@ function App() {
               </ProtectedRoute>
             }
           />
+        <Route path="*" element={
+
+            <NotFound />
+
+          } />
         </Routes>
       </Suspense>
       <p>&copy; {date.getFullYear()} Workwave</p>

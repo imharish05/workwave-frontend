@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import api from "../api/axios";
 
 import {
+  setAppliedJobs,
   setCertifications,
   setEducation,
   setExperience,
@@ -196,7 +197,6 @@ export const setEmployeeJobPreferences = async (dispatch, userData) => {
       success: {
         render({ data }) {
           dispatch(setJobPreferences(data.data.jobPreference));
-
           return "Job Preferences Updated Successfully";
         },
       },
@@ -238,15 +238,19 @@ export const setEmployeeLanguage = async (dispatch, userData) => {
 
 /* ---------------- RESUME ---------------- */
 
-export const uploadResume = async (dispatch, formData) => {
+export const uploadResume = (formData) => async (dispatch) => {
   try {
-    const promise = api.post("/employee/resume", formData);
+    const promise = api.post("/employee/resume", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
     await toast.promise(promise, {
       pending: "Uploading Resume...",
       success: {
         render({ data }) {
-          dispatch(setResume(data.data.filePath));
+          dispatch(setResume(data.data));
           return "Resume uploaded successfully";
         },
       },
@@ -256,7 +260,21 @@ export const uploadResume = async (dispatch, formData) => {
         },
       },
     });
+
   } catch (err) {
-    console.log(err.message)
+    console.error(err);
+    throw err;
+  }
+};
+
+// Applied jobs
+
+export const fetchAppliedJobs = async (dispatch) => {
+  try {
+    const res = await api.get("/employee/applied-jobs");
+
+    dispatch(setAppliedJobs(res.data));
+  } catch (err) {
+    console.error("Failed to fetch applied jobs", err.message);
   }
 };

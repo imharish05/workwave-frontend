@@ -11,52 +11,62 @@ const EmployeeResume = () => {
 
   const [resumeFile, setResumeFile] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const allowedMimeTypes = [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ];
+    const allowedMimeTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
 
-  const extension = file.name.split(".").pop().toLowerCase();
-  const allowedExtensions = ["pdf", "doc", "docx"];
+    const allowedExtensions = ["pdf", "doc", "docx"];
+    const extension = file.name.split(".").pop().toLowerCase();
 
-  if (
-    !allowedMimeTypes.includes(file.type) ||
-    !allowedExtensions.includes(extension)
-  ) {
-    setError("Only PDF, DOC, or DOCX files are allowed");
-    e.target.value = "";
-    return;
-  }
+    if (
+      !allowedMimeTypes.includes(file.type) ||
+      !allowedExtensions.includes(extension)
+    ) {
+      setError("Only PDF, DOC, or DOCX files are allowed");
+      e.target.value = "";
+      return;
+    }
 
-  if (file.size > 5 * 1024 * 1024) {
-    setError("File must be under 5MB");
-    return;
-  }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File must be under 5MB");
+      return;
+    }
 
-  setError("");
-  setResumeFile(file);
-};
+    setError("");
+    setResumeFile(file);
+  };
 
-const submitDetails = async (e) => {
-  e.preventDefault();
+  const submitDetails = async (e) => {
+    e.preventDefault();
 
-  if (!resumeFile) {
-    setError("Please upload your resume");
-    return;
-  }
+    if (!resumeFile) {
+      setError("Please upload your resume");
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append("resume", resumeFile);
+    try {
+      setLoading(true);
 
+      const formData = new FormData();
+      formData.append("resume", resumeFile);
 
-  await uploadResume(dispatch, formData);
-};
+      await dispatch(uploadResume(formData));
+
+      navigate("/employee/profile"); // or next step
+    } catch (err) {
+      setError(err.message || "Failed to upload resume");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -81,9 +91,10 @@ const submitDetails = async (e) => {
 
             <button
               type="submit"
-              className="w-full p-2 bg-black text-white rounded-lg"
+              disabled={loading}
+              className="w-full p-2 bg-black text-white rounded-lg disabled:opacity-50"
             >
-              Upload & Continue
+              {loading ? "Uploading..." : "Upload & Continue"}
             </button>
           </form>
         </div>

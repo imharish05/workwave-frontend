@@ -97,7 +97,6 @@ const deleteLanguage = async (e) => {
             </p>
             <i
               className="bi bi-plus-lg text-xl cursor-pointer"
-              onClick={() => openModal(item)}
             />
           </Link>
         </div>

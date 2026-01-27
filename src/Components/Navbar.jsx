@@ -6,38 +6,37 @@ import { changeRole } from "../Slices/authSlice.js";
 
 const Navbar = () => {
   const dispatch = useDispatch();
-
-  const { role } = useSelector((state) => state.auth.user);
-
   const navigate = useNavigate();
+
+  const role = useSelector((state) => state.auth.user?.role);
 
   const handleRole = () => {
     dispatch(changeRole());
-    console.log("Its working");
     navigate("/set-role");
   };
 
   const handleProfile = () => {
     dispatch(changeRole());
 
-    switch (role) {
-      case "employee":
-        navigate("/employee/dashboard");
-        break;
-      case "employer":
-        navigate("/employer/dashboard");
-        break;
-    }
+    if (role === "employee") navigate("/employee/dashboard");
+    else if (role === "employer") navigate("/employer/dashboard");
   };
+
 
   return (
     <div className="shadow-sm flex justify-between w-screen sticky top-0 bg-white z-100">
       <img
         src={Logo}
         alt="Logo"
-        className="object-contain w-35 md:w-50 h-auto max-h-25"
+        className="object-contain w-35 md:w-50 h-auto max-h-25 cursor-pointer"
+        onClick={() =>
+          navigate(
+            role === "employee" ? "/employee/all-jobs" : "/employer/applicants",
+          )
+        }
       />
-      <div className="flex items-center justify-around ">
+
+      <div className="flex items-center justify-around">
         <div className="icon h-full hover:bg-gray-300">
           {role === "employee" ? (
             <Link to="/employee/all-jobs">

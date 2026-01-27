@@ -6,8 +6,13 @@ import { logOut } from "../Slices/authSlice";
 import { resetEmployee } from "../Slices/employeeSlice";
 import { resetEmployer } from "../Slices/employerSlice";
 import { clearAllJobs } from "../Slices/jobSlice";
+import api from "../api/axios";
+import { useEffect } from "react";
+import { fetchAppliedJobs } from "../Slices/employeeService";
 
 const EmployeeDashboard = () => {
+  const [downloading, setDownloading] = useState(false);
+  const [error, setError] = useState(null);
   const employee = useSelector((state) => state.employee);
 
   const email = useSelector((state) => state.auth.user.email);
@@ -20,15 +25,45 @@ const EmployeeDashboard = () => {
   const firstInitial = nameParts[0]?.[0]?.toUpperCase() || "";
   const secondInitial = nameParts[1]?.[0]?.toUpperCase() || "";
 
+
+  useEffect(() => {
+  fetchAppliedJobs(dispatch);
+}, [dispatch]);
+
   const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logOut());
-    dispatch(resetEmployee());
     dispatch(resetEmployer());
-    dispatch(clearAllJobs())
+    dispatch(resetEmployee());
+    dispatch(clearAllJobs());
     localStorage.clear();
     navigate("/login", { replace: true });
+  };
+
+  const handleDownload = async () => {
+    try {
+      const response = await api.get("/employee/resume/download", {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.setAttribute("download", "resume.pdf"); // backend already sets filename
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      link.remove();
+      
+    } catch (error) {
+      console.error("Failed to download resume:", error);
+    }
   };
 
   return (
@@ -82,38 +117,31 @@ const EmployeeDashboard = () => {
           </Link>
 
           {/* Resume */}
-          <Link to={"/employee/resume"}>
-            <h1 className="text-start md:text-2xl text-lg font-semibold">
-              Resume
-            </h1>
-            <div className="py-5 flex group">
-              <div className="flex flex-1">
-                <i className="bi bi-filetype-pdf text-5xl text-blue-600"></i>
-                <div className="text-start">
-                  <p className="text-md text-gray-600 ps-4">
-                    {employee.resume?.split("/").pop()}
-                  </p>
-                  <button
-                    onClick={() => {
-                      window.open(employee.resume, "_blank");
-                    }}
-                    className="ms-4 cursor-pointer hover:text-blue-500"
-                  >
-                    View Resume
-                  </button>
-                </div>
+          <h1 className="text-start md:text-2xl text-lg font-semibold">
+            Resume
+          </h1>
+
+          <div className="py-5 flex group">
+            <div className="flex flex-1">
+              <i className="bi bi-filetype-pdf text-5xl text-blue-600"></i>
+
+              <div className="text-start ps-4">
+                <p className="text-md text-gray-600">Resume</p>
+
+                <button
+                  onClick={handleDownload}
+                  className="text-green-600 hover:bg-green-50 rounded"
+                  type="button"
+                >
+                  View Resume
+                </button>
               </div>
-              <i
-                className="
-        bi bi-highlighter
-        text-xl
-        self-end
-        transition-transform duration-300 ease-out
-        group-hover:text-blue-400
-      "
-              ></i>
             </div>
-          </Link>
+
+            <Link to="/employee/resume">
+              <i className="bi bi-highlighter text-xl self-end group-hover:text-blue-400" />
+            </Link>
+          </div>
 
           {/* Education */}
           <div className="py-3">
@@ -415,7 +443,7 @@ const EmployeeDashboard = () => {
                   <div className="text-md text-gray-600 ps-4">
                     {employee.languages.length > 0 ? (
                       employee.languages.map((items, index) => (
-                        <div>
+                        <div key={index}>
                           <p key={index}>
                             {items.name.charAt(0).toUpperCase() +
                               items.name.slice(1).toLowerCase()}
@@ -458,7 +486,7 @@ const EmployeeDashboard = () => {
 
             <Link
               to={
-                employee.appliedJobs.length > 0
+                employee.appliedJobs?.length > 0
                   ? "/employee/applied-jobs"
                   : "/employee/all-jobs"
               }
@@ -467,7 +495,9 @@ const EmployeeDashboard = () => {
               <div className="flex-1 flex items-center">
                 <i className="bi bi-joystick text-blue-600 text-5xl"></i>
                 {employee.appliedJobs.length > 0 ? (
-                  <p className="ps-3">{employee.appliedJobs.length} job(s) applied</p>
+                  <p className="ps-3">
+                    {employee.appliedJobs.length} job(s) applied
+                  </p>
                 ) : (
                   <p>Not Applied to jobs yet</p>
                 )}
