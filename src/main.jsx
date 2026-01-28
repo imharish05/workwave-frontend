@@ -10,9 +10,9 @@ import { BrowserRouter, HashRouter } from "react-router-dom";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
-      <BrowserRouter basename="/workwave-frontend">
+      <HashRouter>
         <App />
-      </BrowserRouter>
+      </HashRouter>
     </Provider>
   </StrictMode>
 );

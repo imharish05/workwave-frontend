@@ -79,7 +79,7 @@ function App() {
 
   return (
     <div>
-      <ToastContainer position="top-center" toastStyle={{ width: "auto" }} />
+      <ToastContainer position="top-center" toastStyle={{ width: "auto" }} limit={1}/>
       <Suspense fallback={<PreLoader />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -95,7 +95,7 @@ function App() {
             }
           />
           <Route
-            path="/api/auth/google/callback"
+            path="/google/callback"
             element={<GoogleCallBack />}
           />
 
