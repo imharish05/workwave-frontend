@@ -94,6 +94,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
           <Route
             path="/google/callback"
             element={<GoogleCallBack />}
