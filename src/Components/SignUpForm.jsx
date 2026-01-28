@@ -36,14 +36,14 @@ const SignUpForm = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `http://localhost:5000/api/auth/google`;
+    const backendUrl = "https://workwave-backend-6gta.onrender.com";
+    window.location.href = `${backendUrl}/api/auth/google`;
   };
 
-   return (
-    <div className="w-screen min-h-screen flex justify-center items-center">
-      
-      <div className="w-full max-w-md md:max-w-lg md:shadow-xl rounded-2xl p-6 flex flex-col items-center">
 
+  return (
+    <div className="w-screen min-h-screen flex justify-center items-center">
+      <div className="w-full max-w-md md:max-w-lg md:shadow-xl rounded-2xl p-6 flex flex-col items-center">
         <img
           src={Logo}
           alt="Logo"
@@ -104,11 +104,7 @@ const SignUpForm = () => {
           onClick={handleGoogleLogin}
           className="w-full mt-4 p-2 bg-white border rounded-lg flex items-center justify-center"
         >
-          <img
-            src={googleLogo}
-            className="h-4 w-4 mr-2"
-            alt="Google"
-          />
+          <img src={googleLogo} className="h-4 w-4 mr-2" alt="Google" />
           Sign Up with Google
         </button>
 
@@ -121,7 +117,6 @@ const SignUpForm = () => {
       </div>
     </div>
   );
-
 };
 
 export default SignUpForm;

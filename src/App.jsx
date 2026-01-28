@@ -71,7 +71,7 @@ function App() {
     }
   }, [loading]);
 
-  const date = new Date()
+  const date = new Date();
 
   useEffect(() => {
     if (error) toast.error(error);
@@ -176,15 +176,10 @@ function App() {
               </ProtectedRoute>
             }
           />
-        <Route path="*" element={
-
-            <NotFound />
-
-          } />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       <p>&copy; {date.getFullYear()} Workwave</p>
-
     </div>
   );
 }

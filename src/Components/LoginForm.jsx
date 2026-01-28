@@ -33,8 +33,10 @@ const LogInForm = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    const backendUrl = "https://workwave-backend-6gta.onrender.com";
+    window.location.href = `${backendUrl}/api/auth/google`;
   };
+
 
   return (
     <div className="w-screen min-h-screen flex justify-center items-center">

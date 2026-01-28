@@ -13,6 +13,7 @@ const GoogleCallBack = () => {
   useEffect(() => {
     const token = params.get("token");
 
+
     if (!token) {
       navigate("/login", { replace: true });
       return;
@@ -21,9 +22,14 @@ const GoogleCallBack = () => {
     try {
       const decoded = jwtDecode(token);
 
+      console.log(decoded)
+
       localStorage.setItem("token", token);
 
       dispatch(loginSuccess({ token, user: decoded }));
+
+      console.log(decoded);
+      
 
       if (!decoded.role) {
         navigate("/set-role", { replace: true });
