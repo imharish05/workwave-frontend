@@ -53,6 +53,94 @@ const ApplicantDetails = () => {
     );
   }
 
+  const handleDownload = async () => {
+    try {
+      console.log("Starting download for applicant:", applicant.authId?._id);
+
+      const response = await api.get(
+        `/employee/resume/download/${applicant.authId?._id}`,
+        {
+          responseType: "blob",
+          timeout: 60000,
+          onDownloadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total,
+              );
+              console.log("Download progress:", percentCompleted + "%");
+            }
+          },
+        },
+      );
+
+      console.log("Response received, blob size:", response.data.size, "bytes");
+      console.log("Response content-type:", response.headers["content-type"]);
+
+      // Verify the blob is not empty or too small
+      if (response.data.size < 1000) {
+        console.error(
+          "Downloaded file is suspiciously small:",
+          response.data.size,
+          "bytes",
+        );
+        throw new Error("Downloaded file appears to be incomplete");
+      }
+
+      // Extract filename from Content-Disposition header
+      const contentDisposition = response.headers["content-disposition"];
+      let filename = "resume.pdf";
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(
+          /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/,
+        );
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, "");
+          filename = decodeURIComponent(filename);
+        }
+      }
+
+      console.log("Using filename:", filename);
+
+      // Create blob with proper type
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"] || "application/pdf",
+      });
+
+      console.log("Created blob, size:", blob.size, "bytes");
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+
+      console.log("Download triggered successfully");
+    } catch (error) {
+      console.error("Failed to download resume:", error);
+
+      if (error.response) {
+        console.error("Error status:", error.response.status);
+        console.error("Error data:", error.response.data);
+
+        // Try to read the error message if it's in the blob
+        if (error.response.data instanceof Blob) {
+          const text = await error.response.data.text();
+          console.error("Error message:", text);
+        }
+      }
+    }
+  };
   return (
     <>
       <Navbar />
@@ -325,6 +413,28 @@ const ApplicantDetails = () => {
           )}
         </div>
 
+        {/* Resume Download */}
+        <div className="py-5 bg-gray-50 border border-gray-200 rounded-lg p-4 my-3">
+          <p className="font-semibold flex items-center gap-2 mb-2">
+            <i class="bi bi-file-earmark-arrow-down"></i>
+            Resume
+          </p>
+
+          <div className="ps-4">
+            <div className="flex flex-wrap gap-2 mt-2">
+              <button
+                onClick={handleDownload}
+                className="group relative px-6 py-3 bg-white/80 backdrop-blur-sm text-gray-800 font-semibold rounded-xl border border-gray-200/50 overflow-hidden transition-all duration-300 ease-out hover:bg-blue-500/90 hover:text-white hover:border-blue-400/50 hover:shadow-xl hover:shadow-blue-200/50 hover:-translate-y-1 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                <span className="relative z-10 flex items-center gap-2.5">
+                  <i className="bi bi-file-earmark-text transition-all duration-300 group-hover:scale-110 group-hover:rotate-6" />
+                  View Resume
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Applied Job */}
         <div className="py-5 bg-gray-50 border border-gray-200 rounded-lg p-4 my-3">
           <p className="font-semibold flex items-center gap-2 mb-2">
@@ -333,7 +443,9 @@ const ApplicantDetails = () => {
           </p>
 
           <div className="ps-4">
-            <p className="font-medium">{job.title.charAt(0).toUpperCase() + job.title.slice(1)}</p>
+            <p className="font-medium">
+              {job.title.charAt(0).toUpperCase() + job.title.slice(1)}
+            </p>
             <p className="text-sm text-gray-600">{job.location}</p>
 
             <div className="flex flex-wrap gap-2 mt-2">
